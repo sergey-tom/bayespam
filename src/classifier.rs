@@ -34,6 +34,12 @@ impl Classifier {
         Ok(pre_trained_model)
     }
 
+    /// Create classifier based on a pre-trained model.
+    pub fn new_from_default_pre_trained() -> Result<Self, io::Error> {
+        let mut file = File::open(DEFAULT_FILE_PATH)?;
+        Classifier::new_from_pre_trained(&mut file)
+    }
+
     /// Save the classifier to `file` as JSON.
     /// The JSON will be pretty printed if `pretty` is `true`.
     pub fn save(&self, file: &mut File, pretty: bool) -> Result<(), io::Error> {
@@ -143,8 +149,7 @@ impl Classifier {
 /// Compute the spam score of `msg`, based on a pre-trained model.
 /// The higher the score, the stronger the liklihood that `msg` is a spam is.
 pub fn score(msg: &str) -> Result<f32, io::Error> {
-    let mut file = File::open(DEFAULT_FILE_PATH)?;
-    Classifier::new_from_pre_trained(&mut file).map(|classifier| classifier.score(msg))
+    Classifier::new_from_default_pre_trained().map(|classifier| classifier.score(msg))
 }
 
 /// Identify whether `msg` is a spam or not, based on a pre-trained model.
